@@ -1,8 +1,4 @@
-
-# Let's create a clean, working version of the HTML with proper Fontshare links
-# and verify the font URLs are correct
-
-html_content = '''<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -564,11 +560,4 @@ html_content = '''<!DOCTYPE html>
 </script>
 
 </body>
-</html>'''
-
-# Save to output
-with open('/mnt/agents/output/index.html', 'w', encoding='utf-8') as f:
-    f.write(html_content)
-
-print("Saved to /mnt/agents/output/index.html")
-print(f"File size: {len(html_content)} chars")
+</html>
