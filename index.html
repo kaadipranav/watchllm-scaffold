@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WatchLLM — Agent reliability, from first run to production</title>
+<meta name="description" content="WatchLLM stress tests, replays, and debugs your AI agents before your users find the failures. Built for engineers shipping agents to production.">
+<meta property="og:title" content="WatchLLM — Agent reliability platform">
+<meta property="og:description" content="Your agent passed every test. WatchLLM shows you what it does when things go wrong — before your users find out.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://watchllm.dev">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="WatchLLM — Agent reliability platform">
+<meta name="twitter:description" content="Your agent passed every test. WatchLLM shows you what it does when things go wrong — before your users find out.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Switzer:wght@200;300;400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --crimson: #C0143C;
+    --crimson-dim: #8a0e2a;
+    --crimson-glow: rgba(192, 20, 60, 0.18);
+    --crimson-line: rgba(192, 20, 60, 0.35);
+    --bg: #080808;
+    --surface: #111111;
+    --surface-2: #181818;
+    --border: rgba(255,255,255,0.06);
+    --border-bright: rgba(255,255,255,0.12);
+    --text-primary: #F2F2F0;
+    --text-secondary: #888880;
+    --text-muted: #444440;
+    --font-head: 'Switzer', sans-serif;
+    --font-body: 'DM Sans', sans-serif;
+    --font-mono: 'DM Mono', monospace;
+  }
+
+  html, body {
+    height: 100%;
+    overflow: hidden;
+    background: var(--bg);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── NOISE GRAIN OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 100;
+    opacity: 0.6;
+  }
+
+  /* ── RADIAL GLOW ── */
+  .glow-bg {
+    position: fixed;
+    top: -20%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 900px;
+    height: 700px;
+    background: radial-gradient(ellipse at center, rgba(192,20,60,0.12) 0%, rgba(192,20,60,0.04) 40%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── GRID LINES ── */
+  .grid-lines {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+  .grid-lines::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 80px 80px;
+    mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
+  }
+
+  /* ── LAYOUT ── */
+  .page {
+    position: relative;
+    z-index: 1;
+    height: 100vh;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    grid-template-columns: 1fr;
+    padding: 0 48px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  /* ── NAV ── */
+  nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 28px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+  }
+
+  .nav-logo img {
+    width: 36px;
+    height: 36px;
+    object-fit: contain;
+  }
+
+  .nav-wordmark {
+    font-family: var(--font-head);
+    font-weight: 300;
+    font-size: 17px;
+    letter-spacing: 0.18em;
+    color: var(--text-primary);
+    text-transform: uppercase;
+  }
+
+  .nav-right {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+  }
+
+  .nav-link {
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 300;
+    color: var(--text-secondary);
+    text-decoration: none;
+    letter-spacing: 0.04em;
+    transition: color 0.2s;
+  }
+  .nav-link:hover { color: var(--text-primary); }
+
+  .nav-badge {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 300;
+    letter-spacing: 0.1em;
+    color: var(--crimson);
+    border: 1px solid var(--crimson-line);
+    padding: 3px 10px;
+    border-radius: 2px;
+    text-transform: uppercase;
+    animation: pulse-border 3s ease-in-out infinite;
+  }
+
+  @keyframes pulse-border {
+    0%, 100% { border-color: var(--crimson-line); }
+    50% { border-color: var(--crimson); }
+  }
+
+  /* ── HERO ── */
+  .hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 0;
+    padding: 0 24px;
+  }
+
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 300;
+    letter-spacing: 0.2em;
+    color: var(--crimson);
+    text-transform: uppercase;
+    margin-bottom: 28px;
+    opacity: 0;
+    animation: fade-up 0.8s ease 0.1s forwards;
+  }
+
+  .hero-logo {
+    width: 88px;
+    height: 88px;
+    object-fit: contain;
+    margin-bottom: 36px;
+    opacity: 0;
+    animation: fade-scale 0.9s ease 0.2s forwards;
+    filter: drop-shadow(0 0 32px rgba(192,20,60,0.4));
+  }
+
+  .hero-title {
+    font-family: var(--font-head);
+    font-weight: 200;
+    font-size: clamp(42px, 6vw, 82px);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+    margin-bottom: 10px;
+    opacity: 0;
+    animation: fade-up 0.9s ease 0.3s forwards;
+  }
+
+  .hero-title em {
+    font-style: normal;
+    color: var(--crimson);
+  }
+
+  .hero-sub {
+    font-family: var(--font-head);
+    font-weight: 200;
+    font-size: clamp(42px, 6vw, 82px);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    color: var(--text-secondary);
+    margin-bottom: 32px;
+    opacity: 0;
+    animation: fade-up 0.9s ease 0.4s forwards;
+  }
+
+  .hero-body {
+    font-family: var(--font-body);
+    font-weight: 300;
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--text-secondary);
+    max-width: 520px;
+    margin-bottom: 48px;
+    opacity: 0;
+    animation: fade-up 0.9s ease 0.5s forwards;
+  }
+
+  .hero-body strong {
+    color: var(--text-primary);
+    font-weight: 400;
+  }
+
+  /* ── WAITLIST FORM ── */
+  .form-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    opacity: 0;
+    animation: fade-up 0.9s ease 0.6s forwards;
+  }
+
+  .form-wrap input[type="email"] {
+    width: 300px;
+    height: 44px;
+    background: var(--surface);
+    border: 1px solid var(--border-bright);
+    border-right: none;
+    border-radius: 3px 0 0 3px;
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 300;
+    padding: 0 18px;
+    outline: none;
+    transition: border-color 0.2s;
+    letter-spacing: 0.02em;
+  }
+  .form-wrap input[type="email"]::placeholder { color: var(--text-muted); }
+  .form-wrap input[type="email"]:focus { border-color: var(--crimson-line); }
+
+  .form-wrap button {
+    height: 44px;
+    padding: 0 24px;
+    background: var(--crimson);
+    border: 1px solid var(--crimson);
+    border-radius: 0 3px 3px 0;
+    color: #fff;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    transition: background 0.2s;
+    white-space: nowrap;
+  }
+  .form-wrap button:hover { background: var(--crimson-dim); border-color: var(--crimson-dim); }
+
+  .form-note {
+    margin-top: 14px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 300;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    opacity: 0;
+    animation: fade-up 0.9s ease 0.7s forwards;
+  }
+
+  .success-msg {
+    display: none;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 300;
+    letter-spacing: 0.08em;
+    color: var(--crimson);
+    margin-top: 4px;
+  }
+
+  /* ── FEATURES STRIP ── */
+  .features {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 48px;
+    padding: 24px 0;
+    border-top: 1px solid var(--border);
+    opacity: 0;
+    animation: fade-up 0.9s ease 0.8s forwards;
+  }
+
+  .feature {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .feature-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--crimson);
+    flex-shrink: 0;
+  }
+
+  .feature-text {
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: 300;
+    letter-spacing: 0.06em;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+  }
+
+  .feature-sep {
+    width: 1px;
+    height: 16px;
+    background: var(--border-bright);
+  }
+
+  /* ── FLOATING CODE SNIPPET ── */
+  .code-chip {
+    position: fixed;
+    bottom: 120px;
+    right: 48px;
+    background: var(--surface);
+    border: 1px solid var(--border-bright);
+    border-radius: 6px;
+    padding: 14px 18px;
+    opacity: 0;
+    animation: fade-left 1s ease 1s forwards;
+    pointer-events: none;
+  }
+
+  .code-chip pre {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 300;
+    line-height: 1.8;
+    color: var(--text-secondary);
+    white-space: pre;
+  }
+
+  .code-chip .k { color: #8B6FD4; }
+  .code-chip .s { color: #E8955A; }
+  .code-chip .f { color: #5DADD4; }
+  .code-chip .c { color: var(--text-muted); }
+
+  /* ── SCAN LINE EFFECT ── */
+  .scanline {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(192,20,60,0.6), transparent);
+    animation: scan 6s linear infinite;
+    pointer-events: none;
+    z-index: 50;
+    opacity: 0.4;
+  }
+
+  @keyframes scan {
+    0% { top: 0; }
+    100% { top: 100vh; }
+  }
+
+  /* ── CORNER MARKS ── */
+  .corner {
+    position: fixed;
+    width: 20px;
+    height: 20px;
+    pointer-events: none;
+    z-index: 10;
+    opacity: 0.4;
+  }
+  .corner-tl { top: 16px; left: 16px; border-top: 1px solid var(--crimson); border-left: 1px solid var(--crimson); }
+  .corner-tr { top: 16px; right: 16px; border-top: 1px solid var(--crimson); border-right: 1px solid var(--crimson); }
+  .corner-bl { bottom: 16px; left: 16px; border-bottom: 1px solid var(--crimson); border-left: 1px solid var(--crimson); }
+  .corner-br { bottom: 16px; right: 16px; border-bottom: 1px solid var(--crimson); border-right: 1px solid var(--crimson); }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fade-scale {
+    from { opacity: 0; transform: scale(0.88); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  @keyframes fade-left {
+    from { opacity: 0; transform: translateX(16px); }
+    to { opacity: 0.7; transform: translateX(0); }
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    html, body { overflow: auto; }
+    .page { padding: 0 24px; height: auto; min-height: 100vh; }
+    .hero { padding: 48px 0; }
+    .features { flex-wrap: wrap; gap: 20px; padding: 20px 0; }
+    .feature-sep { display: none; }
+    .code-chip { display: none; }
+    .form-wrap input[type="email"] { width: 220px; }
+    nav { padding: 20px 0; }
+    .nav-right { gap: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="glow-bg"></div>
+<div class="grid-lines"></div>
+<div class="scanline"></div>
+<div class="corner corner-tl"></div>
+<div class="corner corner-tr"></div>
+<div class="corner corner-bl"></div>
+<div class="corner corner-br"></div>
+
+<div class="page">
+
+  <nav>
+    <a class="nav-logo" href="#">
+      <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCAKkAqMDASIAAhEBAxEB/8QAHQABAAMAAwEBAQAAAAAAAAAAAAECAwYHCAQFCf/EAFsQAAIBAwIEAwMIAwoHDQgCAwABAgMEEQUGBxIhMUFRYQgTcRQXIleBkZXSMlJ1CRUWIzdCgqGxszNVYnKUtMEkJScoOFRWdJLR09TwGDRDc5OisuFEY1PC8f/EABsBAQEBAQEBAQEAAAAAAAAAAAABAgMEBgUH/8QANhEBAAIBAgQEBAYBAwQDAAAAAAECEQMEBRIhMRNBUWEUIjJxBoGhscHRkTNC4RUjUvByguL/2gAMAwEAAhEDEQA/APMfzqcT/rH3j+N3P5yPnU4n/WPvD8bufznDwBzD50+J31j7w/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y+8Pxu5/OcPAHMPnU4n/AFj7w/G7n85PzqcT/rH3h+N3P5zhwA5j86nE/wCsfeP43c/nBw4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAW5H5jkfmXAdeWFOR+Y5H5lwDlhTkfmOR+ZcA5YU5H5jkfmXAOWFOR+Y5H5lwDlhTkfmOR+ZcA5YU5H5jkfmXAOWFOR+Y5PUuAckKcnqOT1LgLyQpyepPJ6liUDkhT3b8yfdvzRokAsacM/dvzQVJ+aNCwXw6sfdPzQ90/NGwC+HVj7p+aJ9y/NGuCUgvhVY+5fmh7iX6yN8FkiLGjV8/uH+sh8nl+sj6CSteDV83yeX6yHyeX6yPpwMBfAp6Pm+Ty/WRPyeX6yPowWwDwKej5fk8v1kR8nl+sj7AD4ej4/k8v1kPk8v1kfZgYB8NT0fH8nl+sh8nl+sj7MD" alt="WatchLLM logo">
+      <span class="nav-wordmark">WatchLLM</span>
+    </a>
+    <div class="nav-right">
+      <a class="nav-link" href="mailto:hello@watchllm.dev">Contact</a>
+      <span class="nav-badge">Coming Soon</span>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <span class="eyebrow">Agent reliability platform</span>
+    <img class="hero-logo" src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCAKkAqMDASIAAhEBAxEB/8QAHQABAAMAAwEBAQAAAAAAAAAAAAECAwYHCAQFCf/EAFsQAAIBAwIEAwMIAwoHDQgCAwABAgMEEQUGBxIhMUFRYQgTcRQXIleBkZXSMlJ1CRUWIzdCgqGxszNVYnKUtMEkJScoOFRWdJLR09TwGDRDc5OisuFEY1PC8f/EABsBAQEBAQEBAQEAAAAAAAAAAAABAgMEBgUH/8QANhEBAAIBAgQEBAYBAwQDAAAAAAECEQMEBRIhMRNBUWEUIjJxBoGhscHRkTNC4RUjUvByguL/2gAMAwEAAhEDEQA/APMfzqcT/rH3j+N3P5yPnU4n/WPvD8bufznDwBzD50+J31j7w/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y+8Pxu5/OcPAHMPnU4n/AFj7w/G7n85PzqcT/rH3h+N3P5zhwA5j86nE/wCsfeP43c/nBw4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAW5H5jkfmXAdeWFOR+Y5H5lwDlhTkfmOR+ZcA5YU5H5jkfmXAOWFOR+Y5H5lwDlhTkfmOR+ZcA5YU5H5jkfmXAOWFOR+Y5PUuAckKcnqOT1LgLyQpyepPJ6liUDkhT3b8yfdvzRokAsacM/dvzQVJ+aNCwXw6sfdPzQ90/NGwC+HVj7p+aJ9y/NGuCUgvhVY+5fmh7iX6yN8FkiLGjV8/uH+sh8nl+sj6CSteDV83yeX6yHyeX6yPpwMBfAp6Pm+Ty/WRPyeX6yPowWwDwKej5fk8v1kR8nl+sj7AD4ej4/k8v1kPk8v1kfZgYB8NT0fH8nl+sh8nl+sj7MD" alt="WatchLLM">
+
+    <h1 class="hero-title">Your agent <em>passed</em> every test.</h1>
+    <p class="hero-sub">WatchLLM finds what didn't.</p>
+
+    <p class="hero-body">
+      Stress test, replay, and debug AI agents <strong>before your users find the failures.</strong>
+      Prompt injection. Tool abuse. Hallucination. Fork from any node and see exactly where it broke.
+    </p>
+
+    <div class="form-wrap" id="formWrap">
+      <input type="email" id="emailInput" placeholder="your@email.com" autocomplete="email">
+      <button onclick="handleSubmit()">Join waitlist</button>
+    </div>
+    <p class="form-note" id="formNote">Early access · No spam · Built in public</p>
+    <p class="success-msg" id="successMsg">You're on the list. We'll be in touch.</p>
+  </section>
+
+  <footer class="features">
+    <div class="feature">
+      <div class="feature-dot"></div>
+      <span class="feature-text">Stress testing</span>
+    </div>
+    <div class="feature-sep"></div>
+    <div class="feature">
+      <div class="feature-dot"></div>
+      <span class="feature-text">Graph replay</span>
+    </div>
+    <div class="feature-sep"></div>
+    <div class="feature">
+      <div class="feature-dot"></div>
+      <span class="feature-text">Fork &amp; debug</span>
+    </div>
+    <div class="feature-sep"></div>
+    <div class="feature">
+      <div class="feature-dot"></div>
+      <span class="feature-text">CI/CD integration</span>
+    </div>
+    <div class="feature-sep"></div>
+    <div class="feature">
+      <div class="feature-dot"></div>
+      <span class="feature-text">Zero cost until revenue</span>
+    </div>
+  </footer>
+
+</div>
+
+<div class="code-chip">
+<pre><span class="k">@watchllm</span><span class="f">.test</span>(
+  categories<span class="s">=[</span><span class="s">"prompt_injection"</span><span class="s">]</span>,
+  threshold<span class="s">="severity &lt; 0.3"</span>
+)
+<span class="k">def</span> <span class="f">my_agent</span>(user_input):
+    <span class="c"># your agent here</span>
+    <span class="k">return</span> response</pre>
+</div>
+
+<script>
+  function handleSubmit() {
+    const email = document.getElementById('emailInput').value.trim();
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!re.test(email)) {
+      document.getElementById('emailInput').style.borderColor = '#C0143C';
+      return;
+    }
+    document.getElementById('formWrap').style.display = 'none';
+    document.getElementById('formNote').style.display = 'none';
+    document.getElementById('successMsg').style.display = 'block';
+    // In production: POST to your CF Worker or Formspree
+    // fetch('/api/waitlist', { method: 'POST', body: JSON.stringify({ email }) })
+  }
+
+  document.getElementById('emailInput').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') handleSubmit();
+    this.style.borderColor = '';
+  });
+</script>
+
+</body>
+</html>
