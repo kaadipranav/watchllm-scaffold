@@ -1,4 +1,8 @@
-<!DOCTYPE html>
+
+# Let's create a clean, working version of the HTML with proper Fontshare links
+# and verify the font URLs are correct
+
+html_content = '''<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -12,8 +16,11 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="WatchLLM — Agent reliability platform">
 <meta name="twitter:description" content="Your agent passed every test. WatchLLM shows you what it does when things go wrong — before your users find out.">
-<link rel="preconnect" href="https://api.fontshare.com">
+
+<!-- Fontshare CDN -->
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
 <link href="https://api.fontshare.com/v2/css?f[]=clash-grotesk@200,300,400,500&f[]=switzer@200,300,400,500&f[]=excon@300,400,500&display=swap" rel="stylesheet">
+
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -30,8 +37,8 @@
     --text-primary: #F2F2F0;
     --text-secondary: #888880;
     --text-muted: #444440;
-    --font-head: 'Clash Grotesk', sans-serif;
-    --font-body: 'Switzer', sans-serif;
+    --font-head: 'Clash Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-body: 'Switzer', -apple-system, BlinkMacSystemFont, sans-serif;
     --font-mono: 'Excon', 'Courier New', monospace;
   }
 
@@ -42,6 +49,7 @@
     color: var(--text-primary);
     font-family: var(--font-body);
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   /* ── NOISE GRAIN OVERLAY ── */
@@ -85,6 +93,7 @@
       linear-gradient(90deg, var(--border) 1px, transparent 1px);
     background-size: 80px 80px;
     mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
+    -webkit-mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
   }
 
   /* ── LAYOUT ── */
@@ -116,10 +125,10 @@
     text-decoration: none;
   }
 
-  .nav-logo img {
+  .nav-logo svg {
     width: 36px;
     height: 36px;
-    object-fit: contain;
+    flex-shrink: 0;
   }
 
   .nav-wordmark {
@@ -192,7 +201,6 @@
   .hero-logo {
     width: 88px;
     height: 88px;
-    object-fit: contain;
     margin-bottom: 36px;
     opacity: 0;
     animation: fade-scale 0.9s ease 0.2s forwards;
@@ -457,4 +465,110 @@
 
   <nav>
     <a class="nav-logo" href="#">
-      <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCAKkAqMDASIAAhEBAxEB/8QAHQABAAMAAwEBAQAAAAAAAAAAAAECAwYHCAQFCf/EAFsQAAIBAwIEAwMIAwoHDQgCAwABAgMEEQUGBxIhMUFRYQgTcRQXIleBkZXSMlJ1CRUWIzdCgqGxszNVYnKUtMEkJScoOFRWdJLR09TwGDRDc5OisuFEY1PC8f/EABsBAQEBAQEBAQEAAAAAAAAAAAABAgMEBgUH/8QANhEBAAIBAgQEBAYBAwQDAAAAAAECEQMEBRIhMRNBUWEUIjJxBoGhscHRkTNC4RUjUvByguL/2gAMAwEAAhEDEQA/APMfzqcT/rH3j+N3P5yPnU4n/WPvD8bufznDwBzD50+J31j7w/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPA
+      <!-- Inline SVG logo -->
+      <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="36" height="36" rx="6" fill="#C0143C"/>
+        <path d="M10 18L16 12L22 18L16 24L10 18Z" fill="white" opacity="0.9"/>
+        <path d="M18 18L24 12L30 18L24 24L18 18Z" fill="white" opacity="0.5"/>
+      </svg>
+      <span class="nav-wordmark">WatchLLM</span>
+    </a>
+    <div class="nav-right">
+      <a class="nav-link" href="mailto:hello@watchllm.dev">Contact</a>
+      <span class="nav-badge">Coming Soon</span>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <span class="eyebrow">Agent reliability platform</span>
+    
+    <!-- Inline SVG hero logo -->
+    <svg class="hero-logo" viewBox="0 0 88 88" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="88" height="88" rx="16" fill="#C0143C"/>
+      <path d="M24 44L40 28L56 44L40 60L24 44Z" fill="white" opacity="0.9"/>
+      <path d="M44 44L60 28L76 44L60 60L44 44Z" fill="white" opacity="0.5"/>
+    </svg>
+
+    <h1 class="hero-title">Your agent <em>passed</em> every test.</h1>
+    <p class="hero-sub">WatchLLM finds what didn't.</p>
+
+    <p class="hero-body">
+      Stress test, replay, and debug AI agents <strong>before your users find the failures.</strong>
+      Prompt injection. Tool abuse. Hallucination. Fork from any node and see exactly where it broke.
+    </p>
+
+    <div class="form-wrap" id="formWrap">
+      <input type="email" id="emailInput" placeholder="your@email.com" autocomplete="email">
+      <button onclick="handleSubmit()">Join waitlist</button>
+    </div>
+    <p class="form-note" id="formNote">Early access · No spam · Built in public</p>
+    <p class="success-msg" id="successMsg">You're on the list. We'll be in touch.</p>
+  </section>
+
+  <footer class="features">
+    <div class="feature">
+      <div class="feature-dot"></div>
+      <span class="feature-text">Stress testing</span>
+    </div>
+    <div class="feature-sep"></div>
+    <div class="feature">
+      <div class="feature-dot"></div>
+      <span class="feature-text">Graph replay</span>
+    </div>
+    <div class="feature-sep"></div>
+    <div class="feature">
+      <div class="feature-dot"></div>
+      <span class="feature-text">Fork &amp; debug</span>
+    </div>
+    <div class="feature-sep"></div>
+    <div class="feature">
+      <div class="feature-dot"></div>
+      <span class="feature-text">CI/CD integration</span>
+    </div>
+    <div class="feature-sep"></div>
+    <div class="feature">
+      <div class="feature-dot"></div>
+      <span class="feature-text">Zero cost until revenue</span>
+    </div>
+  </footer>
+
+</div>
+
+<div class="code-chip">
+<pre><span class="k">@watchllm</span><span class="f">.test</span>(
+  categories<span class="s">=[</span><span class="s">"prompt_injection"</span><span class="s">]</span>,
+  threshold<span class="s">="severity &lt; 0.3"</span>
+)
+<span class="k">def</span> <span class="f">my_agent</span>(user_input):
+    <span class="c"># your agent here</span>
+    <span class="k">return</span> response</pre>
+</div>
+
+<script>
+  function handleSubmit() {
+    const email = document.getElementById('emailInput').value.trim();
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!re.test(email)) {
+      document.getElementById('emailInput').style.borderColor = '#C0143C';
+      return;
+    }
+    document.getElementById('formWrap').style.display = 'none';
+    document.getElementById('formNote').style.display = 'none';
+    document.getElementById('successMsg').style.display = 'block';
+  }
+
+  document.getElementById('emailInput').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') handleSubmit();
+    this.style.borderColor = '';
+  });
+</script>
+
+</body>
+</html>'''
+
+# Save to output
+with open('/mnt/agents/output/index.html', 'w', encoding='utf-8') as f:
+    f.write(html_content)
+
+print("Saved to /mnt/agents/output/index.html")
+print(f"File size: {len(html_content)} chars")
