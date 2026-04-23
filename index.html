@@ -12,11 +12,9 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="WatchLLM — Agent reliability platform">
 <meta name="twitter:description" content="Your agent passed every test. WatchLLM shows you what it does when things go wrong — before your users find out.">
-
-<!-- Fontshare CDN -->
-<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
-<link href="https://api.fontshare.com/v2/css?f[]=clash-grotesk@200,300,400,500&f[]=switzer@200,300,400,500&f[]=excon@300,400,500&display=swap" rel="stylesheet">
-
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Switzer:wght@200;300;400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -33,9 +31,9 @@
     --text-primary: #F2F2F0;
     --text-secondary: #888880;
     --text-muted: #444440;
-    --font-head: 'Clash Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
-    --font-body: 'Switzer', -apple-system, BlinkMacSystemFont, sans-serif;
-    --font-mono: 'Excon', 'Courier New', monospace;
+    --font-head: 'Switzer', sans-serif;
+    --font-body: 'DM Sans', sans-serif;
+    --font-mono: 'DM Mono', monospace;
   }
 
   html, body {
@@ -45,7 +43,6 @@
     color: var(--text-primary);
     font-family: var(--font-body);
     -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
   }
 
   /* ── NOISE GRAIN OVERLAY ── */
@@ -89,7 +86,6 @@
       linear-gradient(90deg, var(--border) 1px, transparent 1px);
     background-size: 80px 80px;
     mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
-    -webkit-mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
   }
 
   /* ── LAYOUT ── */
@@ -121,10 +117,10 @@
     text-decoration: none;
   }
 
-  .nav-logo svg {
+  .nav-logo img {
     width: 36px;
     height: 36px;
-    flex-shrink: 0;
+    object-fit: contain;
   }
 
   .nav-wordmark {
@@ -197,6 +193,7 @@
   .hero-logo {
     width: 88px;
     height: 88px;
+    object-fit: contain;
     margin-bottom: 36px;
     opacity: 0;
     animation: fade-scale 0.9s ease 0.2s forwards;
@@ -461,12 +458,7 @@
 
   <nav>
     <a class="nav-logo" href="#">
-      <!-- Inline SVG logo -->
-      <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect width="36" height="36" rx="6" fill="#C0143C"/>
-        <path d="M10 18L16 12L22 18L16 24L10 18Z" fill="white" opacity="0.9"/>
-        <path d="M18 18L24 12L30 18L24 24L18 18Z" fill="white" opacity="0.5"/>
-      </svg>
+      <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCAKkAqMDASIAAhEBAxEB/8QAHQABAAMAAwEBAQAAAAAAAAAAAAECAwYHCAQFCf/EAFsQAAIBAwIEAwMIAwoHDQgCAwABAgMEEQUGBxIhMUFRYQgTcRQXIleBkZXSMlJ1CRUWIzdCgqGxszNVYnKUtMEkJScoOFRWdJLR09TwGDRDc5OisuFEY1PC8f/EABsBAQEBAQEBAQEAAAAAAAAAAAABAgMEBgUH/8QANhEBAAIBAgQEBAYBAwQDAAAAAAECEQMEBRIhMRNBUWEUIjJxBoGhscHRkTNC4RUjUvByguL/2gAMAwEAAhEDEQA/APMfzqcT/rH3j+N3P5yPnU4n/WPvD8bufznDwBzD50+J31j7w/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y+8Pxu5/OcPAHMPnU4n/AFj7w/G7n85PzqcT/rH3h+N3P5zhwA5j86nE/wCsfeP43c/nBw4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAW5H5jkfmXAdeWFOR+Y5H5lwDlhTkfmOR+ZcA5YU5H5jkfmXAOWFOR+Y5H5lwDlhTkfmOR+ZcA5YU5H5jkfmXAOWFOR+Y5PUuAckKcnqOT1LgLyQpyepPJ6liUDkhT3b8yfdvzRokAsacM/dvzQVJ+aNCwXw6sfdPzQ90/NGwC+HVj7p+aJ9y/NGuCUgvhVY+5fmh7iX6yN8FkiLGjV8/uH+sh8nl+sj6CSteDV83yeX6yHyeX6yPpwMBfAp6Pm+Ty/WRPyeX6yPowWwDwKej5fk8v1kR8nl+sj7AD4ej4/k8v1kPk8v1kfZgYB8NT0fH8nl+sh8nl+sj7MD" alt="WatchLLM logo">
       <span class="nav-wordmark">WatchLLM</span>
     </a>
     <div class="nav-right">
@@ -477,13 +469,7 @@
 
   <section class="hero">
     <span class="eyebrow">Agent reliability platform</span>
-    
-    <!-- Inline SVG hero logo -->
-    <svg class="hero-logo" viewBox="0 0 88 88" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect width="88" height="88" rx="16" fill="#C0143C"/>
-      <path d="M24 44L40 28L56 44L40 60L24 44Z" fill="white" opacity="0.9"/>
-      <path d="M44 44L60 28L76 44L60 60L44 44Z" fill="white" opacity="0.5"/>
-    </svg>
+    <img class="hero-logo" src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCAKkAqMDASIAAhEBAxEB/8QAHQABAAMAAwEBAQAAAAAAAAAAAAECAwYHCAQFCf/EAFsQAAIBAwIEAwMIAwoHDQgCAwABAgMEEQUGBxIhMUFRYQgTcRQXIleBkZXSMlJ1CRUWIzdCgqGxszNVYnKUtMEkJScoOFRWdJLR09TwGDRDc5OisuFEY1PC8f/EABsBAQEBAQEBAQEAAAAAAAAAAAABAgMEBgUH/8QANhEBAAIBAgQEBAYBAwQDAAAAAAECEQMEBRIhMRNBUWEUIjJxBoGhscHRkTNC4RUjUvByguL/2gAMAwEAAhEDEQA/APMfzqcT/rH3j+N3P5yPnU4n/WPvD8bufznDwBzD50+J31j7w/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y28Pxu5/OcPAHMPnT4nfWNvD8bufzj50+J31jbw/G7n85w8Acw+dPid9Y28Pxu5/OPnT4nfWNvD8bufznDwBzD50+J31jbw/G7n84+dPid9Y+8Pxu5/OcPAHMPnU4n/AFj7w/G7n85PzqcT/rH3h+N3P5zhwA5j86nE/wCsfeP43c/nBw4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAW5H5jkfmXAdeWFOR+Y5H5lwDlhTkfmOR+ZcA5YU5H5jkfmXAOWFOR+Y5H5lwDlhTkfmOR+ZcA5YU5H5jkfmXAOWFOR+Y5PUuAckKcnqOT1LgLyQpyepPJ6liUDkhT3b8yfdvzRokAsacM/dvzQVJ+aNCwXw6sfdPzQ90/NGwC+HVj7p+aJ9y/NGuCUgvhVY+5fmh7iX6yN8FkiLGjV8/uH+sh8nl+sj6CSteDV83yeX6yHyeX6yPpwMBfAp6Pm+Ty/WRPyeX6yPowWwDwKej5fk8v1kR8nl+sj7AD4ej4/k8v1kPk8v1kfZgYB8NT0fH8nl+sh8nl+sj7MD" alt="WatchLLM">
 
     <h1 class="hero-title">Your agent <em>passed</em> every test.</h1>
     <p class="hero-sub">WatchLLM finds what didn't.</p>
@@ -512,52 +498,4 @@
       <span class="feature-text">Graph replay</span>
     </div>
     <div class="feature-sep"></div>
-    <div class="feature">
-      <div class="feature-dot"></div>
-      <span class="feature-text">Fork &amp; debug</span>
-    </div>
-    <div class="feature-sep"></div>
-    <div class="feature">
-      <div class="feature-dot"></div>
-      <span class="feature-text">CI/CD integration</span>
-    </div>
-    <div class="feature-sep"></div>
-    <div class="feature">
-      <div class="feature-dot"></div>
-      <span class="feature-text">Zero cost until revenue</span>
-    </div>
-  </footer>
-
-</div>
-
-<div class="code-chip">
-<pre><span class="k">@watchllm</span><span class="f">.test</span>(
-  categories<span class="s">=[</span><span class="s">"prompt_injection"</span><span class="s">]</span>,
-  threshold<span class="s">="severity &lt; 0.3"</span>
-)
-<span class="k">def</span> <span class="f">my_agent</span>(user_input):
-    <span class="c"># your agent here</span>
-    <span class="k">return</span> response</pre>
-</div>
-
-<script>
-  function handleSubmit() {
-    const email = document.getElementById('emailInput').value.trim();
-    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!re.test(email)) {
-      document.getElementById('emailInput').style.borderColor = '#C0143C';
-      return;
-    }
-    document.getElementById('formWrap').style.display = 'none';
-    document.getElementById('formNote').style.display = 'none';
-    document.getElementById('successMsg').style.display = 'block';
-  }
-
-  document.getElementById('emailInput').addEventListener('keydown', function(e) {
-    if (e.key === 'Enter') handleSubmit();
-    this.style.borderColor = '';
-  });
-</script>
-
-</body>
-</html>
+    <div
